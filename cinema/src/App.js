@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import EmployeeAPI from "./api/service";
+import Table from "./Table";
+import Form from "./Form";
+import { useState } from "react";
+
+const initialEmployees = MovieApi.all();
 
 function App() {
+  const [movies, setMovies] = useState(initialEmployees);
+
+  const delMov = (id) => {
+    if (EmployeeAPI.delete(id)) {
+      setEmployees(movie.filter((movie) => movie.id !== id));
+    }
+  };
+
+  const addMov = (movie) => {
+    const newMovie = MovieAPI.add(movie);
+    if (newMovie) {
+      setMov([...movies, newMovie]);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Form handleSubmit={addMovie} inMovie={{ title: "", releaseYear: "" }} />
+      <Table movies={movies} delMovie={delMov} />
     </div>
   );
 }

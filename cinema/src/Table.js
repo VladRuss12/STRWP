@@ -1,6 +1,6 @@
 import React from "react";
 
-const Table = ({ employees, delEmployee }) => {
+const Table = ({ movies, delMovie }) => {
   return (
     <table>
       <thead>
@@ -11,7 +11,7 @@ const Table = ({ employees, delEmployee }) => {
         </tr>
       </thead>
       <tbody>
-        {employees.map((employee, index) => {
+        {employees.map((movie, index) => {
           return (
             <tr key={index}>
               <td>{movie.title}</td>
