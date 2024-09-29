@@ -1,31 +1,31 @@
 import "./App.css";
-import EmployeeAPI from "./api/service";
+import MovieAPI from "./api/service";
 import Table from "./Table";
 import Form from "./Form";
 import { useState } from "react";
 
-const initialEmployees = MovieApi.all();
+const initialMovies = MovieAPI.all();
 
 function App() {
-  const [movies, setMovies] = useState(initialEmployees);
+  const [movies, setMovies] = useState(initialMovies);
 
-  const delMov = (id) => {
-    if (EmployeeAPI.delete(id)) {
-      setEmployees(movie.filter((movie) => movie.id !== id));
+  const delMovie = (id) => {
+    if (MovieAPI.delete(id)) {
+      setMovies(movies.filter((movie) => movie.id !== id));
     }
   };
 
-  const addMov = (movie) => {
+  const addMovie = (movie) => {
     const newMovie = MovieAPI.add(movie);
     if (newMovie) {
-      setMov([...movies, newMovie]);
+      setMovies([...movies, newMovie]);
     }
   };
 
   return (
     <div className="App">
-      <Form handleSubmit={addMovie} inMovie={{ title: "", releaseYear: "" }} />
-      <Table movies={movies} delMovie={delMov} />
+      <Form handleSubmit={addMovie} inMovie={{ title: "", genre: "" }} />
+      <Table movies={movies} delMovie={delMovie} />
     </div>
   );
 }

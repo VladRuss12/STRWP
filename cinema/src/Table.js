@@ -6,16 +6,16 @@ const Table = ({ movies, delMovie }) => {
       <thead>
         <tr>
           <th>Title</th>
-          <th>ReleaseYear</th>
+          <th>Genre</th>
           <th>Remove</th>
         </tr>
       </thead>
       <tbody>
-        {employees.map((movie, index) => {
+        {movies.map((movie, index) => {
           return (
             <tr key={index}>
               <td>{movie.title}</td>
-              <td>{movie.releaseYear}</td>
+              <td>{movie.genre}</td>
               <td>
                 <button onClick={() => delMovie(movie.id)}>Delete</button>
               </td>
@@ -26,3 +26,5 @@ const Table = ({ movies, delMovie }) => {
     </table>
   );
 };
+
+export default Table;

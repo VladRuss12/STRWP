@@ -6,44 +6,34 @@ const Form = ({ handleSubmit, inMovie }) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setEmployee({ ...movie, [name]: value });
+    setMovie({ ...movie, [name]: value });
   };
 
   const onSubmit = (event) => {
     event.preventDefault();
     handleSubmit(movie);
-    setEmployee(inMovie);
-  }; 
+    setMovie(inMovie);
+  };
 
-        return (
-            <form onSubmit={this.onFormSubmit}>
-                <label for="title">Title</label>
-                <input 
-                    type="text" 
-                    name="title" 
-                    id="title"
-                    value={title} 
-                    onChange={this.handleChange} />
-                <label for="releaseYear">ReleaseYear</label>
-                <input 
-                    type="integer" 
-                    name="releaseYear" 
-                    id="releaseYear"
-                    value={releaseYear} 
-                    onChange={this.handleChange} />
-                    <label for="description">Description</label>
-                <input 
-                    type="text" 
-                    name="description" 
-                    id="description"
-                    value={description} 
-                    onChange={this.handleChange} />
-                <button type="submit">
-                    Submit
-                </button>
-            </form>
-        );
-    }
-
+  return (
+    <form onSubmit={onSubmit}>
+      <label htmlFor="title">Title</label>
+      <input
+        type="text"
+        name="title"
+        value={movie.title}
+        onChange={handleChange}
+      />
+      <label htmlFor="genre">Genre</label>
+      <input
+        type="text"
+        name="genre"
+        value={movie.genre}
+        onChange={handleChange}
+      />
+      <button type="submit">Add</button>
+    </form>
+  );
+};
 
 export default Form;
