@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import { TextField, Button, Box } from "@mui/material";  // Добавлены компоненты MUI
 
 const Form = ({ handleSubmit, inMovie }) => {
   const [movie, setMovie] = useState(inMovie);
@@ -16,23 +17,27 @@ const Form = ({ handleSubmit, inMovie }) => {
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <label htmlFor="title">Title</label>
-      <input
-        type="text"
+    <Box component="form" onSubmit={onSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <TextField
+        label="Title"
+        variant="outlined"
         name="title"
         value={movie.title}
         onChange={handleChange}
+        fullWidth
       />
-      <label htmlFor="genre">Genre</label>
-      <input
-        type="text"
+      <TextField
+        label="Genre"
+        variant="outlined"
         name="genre"
         value={movie.genre}
         onChange={handleChange}
+        fullWidth
       />
-      <button type="submit">Add</button>
-    </form>
+      <Button variant="contained" color="primary" type="submit">
+        Add
+      </Button>
+    </Box>
   );
 };
 
