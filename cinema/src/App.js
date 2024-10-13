@@ -1,14 +1,16 @@
-
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import MovieAPI from "./api/service";
-import Table from "./Table";
-import Form from "./Form";
+import MovieTable from "./components/Table"; 
+import Form from "./components/Form";
 import { useState } from "react";
-import { Container } from "@mui/material";  // Добавлено
+import { Container } from "@mui/material";  
+import Login from "./components/Login";
 
 const initialMovies = MovieAPI.all();
 
 function App() {
   const [movies, setMovies] = useState(initialMovies);
+  const [user, setUser] = useState(null);
 
   const delMovie = (id) => {
     if (MovieAPI.delete(id)) {
@@ -23,11 +25,32 @@ function App() {
     }
   };
 
+  const handleLogin = (user) => {
+    setUser(user);
+  };
+
   return (
-    <Container className="App" maxWidth="md"> {/* Используем Container */}
-      <Form handleSubmit={addMovie} inMovie={{ title: "", genre: "" }} />
-      <Table movies={movies} delMovie={delMovie} />
-    </Container>
+    <Router>
+      <Container className="App" maxWidth="md">
+        <Routes>
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route
+            path="/movies"
+            element={
+              user ? (
+                <>
+                  <Form handleSubmit={addMovie} inMovie={{ title: "", genre: "" }} />
+                  <MovieTable movies={movies} delMovie={delMovie} /> {}
+                </>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </Container>
+    </Router>
   );
 }
 

@@ -36,7 +36,7 @@ const MovieTable = ({ movies, delMovie }) => {
         <TableHead>
           <TableRow>
             <StyledTableCell> {/* Заголовки таблицы */}
-              <Typography variant="h6" sx={{ color: "#ff9900" }}> {/* Оранжевый цвет текста заголовков */}
+              <Typography variant="h6" sx={{ color: "#ff9900" }}> {/* Оранжевый цвет заголовков */}
                 Title
               </Typography>
             </StyledTableCell>
@@ -60,10 +60,10 @@ const MovieTable = ({ movies, delMovie }) => {
               <StyledTableCell>
                 <Button
                   variant="contained"
-                  color="error"      // Красный цвет кнопки удаления
+                  color="error"      
                   onClick={() => delMovie(movie.id)}
                   sx={{
-                    backgroundColor: "#ff4c4c",  // Кастомный цвет
+                    backgroundColor: "#ff4c4c",  
                     "&:hover": {
                       backgroundColor: "#ff3333",
                     },
