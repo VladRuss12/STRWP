@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Box,
-} from '@mui/material';
-import { styled } from '@mui/system';
+import { Paper, TextField, Button, Typography, Box } from '@mui/material';
+import { styled } from '@mui/material/styles'; // Измените импорт на правильный
 
 // Стилизация основного контейнера для формы
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -18,7 +12,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   margin: 'auto', // Центрирование
 }));
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, toggleTheme, isDarkMode }) => { // Добавляем isDarkMode как пропс
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -32,9 +26,6 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Username:', username);
-    console.log('Password:', password);
-    console.log('Users:', users); // Выводим users для отладки
 
     // Проверяем наличие пользователя
     if (users[username] && users[username] === password) {
@@ -60,8 +51,9 @@ const Login = ({ onLogin }) => {
             onChange={(e) => setUsername(e.target.value)}
             InputProps={{
               sx: {
-                backgroundColor: '#141414', // Фон поля ввода
-                color: '#fff', // Цвет текста
+                backgroundColor: '#141414',
+                color: '#fff',
+                '& .MuiInputBase-input': { color: '#fff' }, // Цвет текста в поле
               },
             }}
           />
@@ -76,8 +68,9 @@ const Login = ({ onLogin }) => {
             onChange={(e) => setPassword(e.target.value)}
             InputProps={{
               sx: {
-                backgroundColor: '#141414', // Фон поля ввода
-                color: '#fff', // Цвет текста
+                backgroundColor: '#141414',
+                color: '#fff',
+                '& .MuiInputBase-input': { color: '#fff' }, // Цвет текста в поле
               },
             }}
           />
@@ -88,9 +81,9 @@ const Login = ({ onLogin }) => {
           type="submit"
           variant="contained"
           sx={{
-            backgroundColor: '#ff9900', // Цвет кнопки
+            backgroundColor: '#ff9900',
             '&:hover': {
-              backgroundColor: '#ff7a00', // Цвет кнопки при наведении
+              backgroundColor: '#ff7a00',
             },
           }}
         >
