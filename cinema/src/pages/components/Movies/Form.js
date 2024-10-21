@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { TextField, Button, Box, Paper } from "@mui/material";  // Добавлены компоненты MUI
+import { TextField, Button, Box, Paper } from "@mui/material";  
 
 const Form = ({ handleSubmit, inMovie }) => {
   const [movie, setMovie] = useState(inMovie);

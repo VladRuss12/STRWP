@@ -1,13 +1,12 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+// src/App.js
 import { useState } from "react";
 import { Container, Button, CssBaseline, Box } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles"; // Для темы
-import { lightTheme, darkTheme } from "./themes"; // Импорт тем
+import { ThemeProvider } from "@mui/material/styles"; 
+import { BrowserRouter as Router } from "react-router-dom";
+import { lightTheme, darkTheme } from "./themes"; 
 import MovieAPI from "./api/service";
-import MovieTable from "./components/Table";
-import MovieCards from "./components/MovieCards";
-import Form from "./components/Form";
-import Login from "./components/Login";
+import NavBar from "./pages/components/NavBar";
+import AppRouter from "./AppRouter";
 
 const initialMovies = MovieAPI.all();
 
@@ -41,6 +40,7 @@ function App() {
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <CssBaseline />
       <Router>
+        <NavBar />
         <Container className="App" maxWidth="md">
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             {/* Кнопка переключения темы */}
@@ -48,34 +48,15 @@ function App() {
               Переключить на {isDarkMode ? "дневную" : "ночную"} тему
             </Button>
           </Box>
-
-          <Routes>
-            <Route path="/login" element={<Login onLogin={handleLogin} toggleTheme={toggleTheme} isDarkMode={isDarkMode} />} />
-            <Route
-              path="/movies"
-              element={
-                user ? (
-                  <>
-                    <Form handleSubmit={addMovie} inMovie={{ title: "", genre: "" }} />
-                    <MovieTable movies={movies} delMovie={delMovie} toggleTheme={toggleTheme} />
-                  </>
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
-            />
-            <Route
-              path="/movie-cards"
-              element={
-                user ? (
-                  <MovieCards movies={movies} delMovie={delMovie} toggleTheme={toggleTheme} />
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
-            />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
+          <AppRouter
+            user={user}
+            movies={movies}
+            delMovie={delMovie}
+            addMovie={addMovie}
+            handleLogin={handleLogin}
+            toggleTheme={toggleTheme}
+            isDarkMode={isDarkMode}
+          />
         </Container>
       </Router>
     </ThemeProvider>

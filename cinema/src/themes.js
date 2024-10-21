@@ -1,4 +1,4 @@
-// src/themes.js
+
 import { createTheme } from '@mui/material/styles';
 
 // Дневная тема
@@ -22,23 +22,23 @@ export const lightTheme = createTheme({
   },
 });
 
-// Ночная тема, вдохновленная Кинопоиском
+// Ночная тема
 export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#ff6600', // Оранжевый как на Кинопоиске
+      main: '#ff6600', 
     },
     secondary: {
       main: '#ffcc00',
     },
     background: {
-      default: '#1a1a1a', // Темный фон
-      paper: '#222222', // Темные карточки и элементы
+      default: '#1a1a1a', 
+      paper: '#222222', 
     },
     text: {
-      primary: '#ffffff', // Белый текст
-      secondary: '#bbbbbb', // Серый текст
+      primary: '#ffffff', 
+      secondary: '#bbbbbb', 
     },
   },
 });

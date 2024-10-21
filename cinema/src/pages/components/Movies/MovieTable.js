@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, Box } from "@mui/material";
 import { styled } from "@mui/system";
-import { Link } from "react-router-dom"; // Для перехода на страницу карточек
+import { Link } from "react-router-dom"; 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#141414",
@@ -12,10 +12,10 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
-    backgroundColor: "#1f1f1f",
+    backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#f0f0f0', 
   },
   "&:nth-of-type(even)": {
-    backgroundColor: "#2c2c2c",
+    backgroundColor: theme.palette.mode === 'dark' ? '#1a1a1a' : '#d0d0d0', 
   },
 }));
 
