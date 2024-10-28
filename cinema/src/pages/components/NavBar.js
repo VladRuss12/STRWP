@@ -1,7 +1,9 @@
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, IconButton } from "@mui/material";
 import { Link } from "react-router-dom";
+import Brightness7 from '@mui/icons-material/Brightness7'; 
+import Brightness4 from '@mui/icons-material/Brightness4'; 
 
-const NavBar = () => {
+const NavBar = ({ toggleTheme, isDarkMode }) => {
   return (
     <AppBar position="static">
       <Toolbar>
@@ -17,6 +19,9 @@ const NavBar = () => {
         <Button color="inherit" component={Link} to="/login">
           Login
         </Button>
+        <IconButton color="inherit" onClick={toggleTheme} sx={{ ml: 2 }}>
+          {isDarkMode ? <Brightness7 /> : <Brightness4 />}
+        </IconButton>
       </Toolbar>
     </AppBar>
   );

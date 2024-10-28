@@ -1,35 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Paper, TextField, Button, Typography, Box } from '@mui/material';
-import { styled } from '@mui/material/styles'; 
+import { useDispatch } from 'react-redux';
+import { login } from '../../../redux/auth/authSlice';
 
-// Стилизация основного контейнера для формы
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#1b1b1b', 
-  padding: theme.spacing(3), 
-  borderRadius: '8px', 
-  maxWidth: '400px', 
-  margin: 'auto', 
-}));
-
-const Login = ({ onLogin, toggleTheme, isDarkMode }) => { 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const Login = () => {
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch(); 
 
-  // Определяем статический объект пользователей
   const users = {
     aaa: '123',
     admin: 'admin',
+    user1: 'user1',
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials({ ...credentials, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { username, password } = credentials;
 
-    // Проверяем наличие пользователя
-    if (users[username] && users[username] === password) {
-      onLogin({ username }); // Передаем только имя пользователя
+    if (users[username] === password) {
+      dispatch(login({ username })); // Dispatch the login action
       navigate('/movies');
     } else {
       setError('Неправильный логин или пароль');
@@ -37,8 +34,8 @@ const Login = ({ onLogin, toggleTheme, isDarkMode }) => {
   };
 
   return (
-    <StyledPaper elevation={3}>
-      <Typography variant="h5" align="center" sx={{ color: '#ff9900', marginBottom: 2 }}>
+    <Paper elevation={3} sx={{ padding: 3 }}>
+      <Typography variant="h5" align="center" sx={{ mb: 2 }}>
         Вход
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -47,15 +44,9 @@ const Login = ({ onLogin, toggleTheme, isDarkMode }) => {
             fullWidth
             label="Логин"
             variant="outlined"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            InputProps={{
-              sx: {
-                backgroundColor: '#141414',
-                color: '#fff',
-                '& .MuiInputBase-input': { color: '#fff' }, 
-              },
-            }}
+            name="username"
+            value={credentials.username}
+            onChange={handleChange}
           />
         </Box>
         <Box mb={2}>
@@ -64,33 +55,17 @@ const Login = ({ onLogin, toggleTheme, isDarkMode }) => {
             label="Пароль"
             type="password"
             variant="outlined"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              sx: {
-                backgroundColor: '#141414',
-                color: '#fff',
-                '& .MuiInputBase-input': { color: '#fff' }, 
-              },
-            }}
+            name="password"
+            value={credentials.password}
+            onChange={handleChange}
           />
         </Box>
         {error && <Typography color="error" align="center">{error}</Typography>}
-        <Button
-          fullWidth
-          type="submit"
-          variant="contained"
-          sx={{
-            backgroundColor: '#ff9900',
-            '&:hover': {
-              backgroundColor: '#ff7a00',
-            },
-          }}
-        >
+        <Button fullWidth type="submit" variant="contained">
           Войти
         </Button>
       </form>
-    </StyledPaper>
+    </Paper>
   );
 };
 
