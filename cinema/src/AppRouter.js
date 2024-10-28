@@ -6,19 +6,19 @@ import MovieCards from "./pages/components/Movies/MovieCards";
 import Form from "./pages/components/Movies/Form";
 import Login from "./pages/components/Login/Login";
 import { deleteMovie, addMovie } from "./redux/movies/moviesSlice";
-import { login as loginAction } from "./redux/auth/authSlice"; // Import your login action
+import { login as loginAction } from "./redux/auth/authSlice"; 
 
 const AppRouter = () => {
   const dispatch = useDispatch();
-  const movies = useSelector((state) => state.movies); // Get movies from Redux store
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // Get authentication status from Redux store
+  const movies = useSelector((state) => state.movies); 
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); 
 
   const handleDeleteMovie = (id) => {
-    dispatch(deleteMovie(id)); // Dispatch action to delete movie
+    dispatch(deleteMovie(id)); 
   };
 
   const handleLogin = (user) => {
-    dispatch(loginAction(user)); // Dispatch login action
+    dispatch(loginAction(user)); 
   };
 
   return (
@@ -44,7 +44,10 @@ const AppRouter = () => {
         path="/movie-cards"
         element={
           isAuthenticated ? (
+            <>
+            <Form handleSubmit={(movie) => dispatch(addMovie(movie))} inMovie={{ title: "", genre: "" }} />
             <MovieCards delMovie={handleDeleteMovie} />
+            </>
           ) : (
             <Navigate to="/login" />
           )

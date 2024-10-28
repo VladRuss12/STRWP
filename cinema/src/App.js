@@ -4,7 +4,7 @@ import { Container, CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter as Router } from "react-router-dom";
 import { lightTheme, darkTheme } from "./themes";
-import store from "./redux/store"; // Import the Redux store
+import store from "./redux/store"; 
 import NavBar from "./pages/components/NavBar";
 import AppRouter from "./AppRouter";
 

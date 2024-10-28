@@ -11,9 +11,9 @@ const Login = () => {
   const dispatch = useDispatch(); 
 
   const users = {
-    aaa: '123',
-    admin: 'admin',
-    user1: 'user1',
+    aaa: { password: '123', role: 'user' },
+    admin: { password: 'admin', role: 'admin' },
+    user1: { password: 'user1', role: 'user' },
   };
 
   const handleChange = (e) => {
@@ -25,8 +25,9 @@ const Login = () => {
     e.preventDefault();
     const { username, password } = credentials;
 
-    if (users[username] === password) {
-      dispatch(login({ username })); // Dispatch the login action
+    if (users[username] && users[username].password === password) {
+      const role = users[username].role;
+      dispatch(login({ user: { username }, role })); 
       navigate('/movies');
     } else {
       setError('Неправильный логин или пароль');

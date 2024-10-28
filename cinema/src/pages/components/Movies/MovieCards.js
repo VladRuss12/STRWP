@@ -8,7 +8,7 @@ import {
   Grid,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteMovie } from '../../../redux/movies/moviesSlice'; // Ensure the correct import path
+import { deleteMovie } from '../../../redux/movies/moviesSlice'; 
 
 const MovieCards = () => {
   const dispatch = useDispatch();

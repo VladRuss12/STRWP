@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteMovie } from '../../../redux/movies/moviesSlice'; // Ensure this path is correct
+import { deleteMovie } from '../../../redux/movies/moviesSlice'; 
 
 const MovieTable = () => {
   const dispatch = useDispatch();
