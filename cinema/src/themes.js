@@ -37,7 +37,7 @@ const sharedComponents = {
   MuiCard: {
     styleOverrides: {
       root: {
-        backgroundColor: '#fff',
+        backgroundColor: '#fff', // Light theme default
         color: '#000',
       },
     },
@@ -120,6 +120,14 @@ export const darkTheme = createTheme({
         root: {
           backgroundColor: '#1f1f1f',
           borderRadius: '8px',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#2c2c2c', 
+          color: '#ffffff',
         },
       },
     },

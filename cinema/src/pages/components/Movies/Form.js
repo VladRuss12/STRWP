@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Paper } from "@mui/material";
+import { TextField, Button, Box, Paper, Typography } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { addMovie } from "../../../redux/movies/moviesSlice"; 
 
-const Form = ({ handleSubmit, inMovie }) => {
+const Form = ({ inMovie }) => {
+  const dispatch = useDispatch();
   const [movie, setMovie] = useState(inMovie);
+  const [error, setError] = useState('');
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -11,8 +15,17 @@ const Form = ({ handleSubmit, inMovie }) => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    handleSubmit(movie);
-    setMovie(inMovie);
+    
+ 
+    if (!movie.title || !movie.genre) {
+      setError('Пожалуйста, заполните все поля.');
+      return;
+    }
+
+   
+    dispatch(addMovie(movie));
+    setMovie(inMovie); 
+    setError(''); 
   };
 
   return (
@@ -34,6 +47,7 @@ const Form = ({ handleSubmit, inMovie }) => {
           onChange={handleChange}
           fullWidth
         />
+        {error && <Typography color="error">{error}</Typography>} {/* Отображение ошибки */}
         <Button variant="contained" type="submit">
           Add Movie
         </Button>
@@ -42,4 +56,4 @@ const Form = ({ handleSubmit, inMovie }) => {
   );
 };
 
-export default Form; 
+export default Form;

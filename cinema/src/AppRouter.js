@@ -45,8 +45,8 @@ const AppRouter = () => {
         element={
           isAuthenticated ? (
             <>
-            <Form handleSubmit={(movie) => dispatch(addMovie(movie))} inMovie={{ title: "", genre: "" }} />
-            <MovieCards delMovie={handleDeleteMovie} />
+              <Form handleSubmit={(movie) => dispatch(addMovie(movie))} inMovie={{ title: "", genre: "" }} />
+              <MovieCards delMovie={handleDeleteMovie} />
             </>
           ) : (
             <Navigate to="/login" />

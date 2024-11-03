@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { Paper, TextField, Button, Typography, Box } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { login } from '../../../redux/auth/authSlice';
+import { login, loginSuccess } from '../../../redux/auth/authSlice'; 
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -27,7 +27,8 @@ const Login = () => {
 
     if (users[username] && users[username].password === password) {
       const role = users[username].role;
-      dispatch(login({ user: { username }, role })); 
+      dispatch(login());
+      dispatch(loginSuccess({ user: { username }, role })); 
       navigate('/movies');
     } else {
       setError('Неправильный логин или пароль');
