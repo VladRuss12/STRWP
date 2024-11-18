@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Paper, TextField, Button, Typography, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../../../redux/auth/authSlice';
-import { selectError, selectLoading } from '../../../redux/auth/authSelector'; // Импортируем селекторы
+import { loginSuccess, loginFailure } from '../../../redux/auth/authSlice';
+import { selectError, selectLoading } from '../../../redux/auth/authSelector';
+import axiosConfig from '../../../api/axiosConfig'; 
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [localError, setLocalError] = useState('');
   const navigate = useNavigate();
-  const dispatch = useDispatch(); 
-  const error = useSelector(selectError); // Используем селектор для получения ошибки
-  const loading = useSelector(selectLoading); // Используем селектор для получения статуса загрузки
+  const dispatch = useDispatch();
+  const error = useSelector(selectError);
+  const loading = useSelector(selectLoading);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,12 +21,33 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(login(credentials));
-    
-    if (login.fulfilled.match(result)) {
+    console.log("Attempting to log in with:", credentials); 
+
+    try {
+ 
+      const response = await axiosConfig.post('/auth/sign-in', credentials);
+
+      console.log("Login response:", response); 
+
+   
+      localStorage.setItem('jwt_token', response.data.token);
+
+
+      axiosConfig.defaults.headers['Authorization'] = `Bearer ${response.data.token}`;
+
+     
+      dispatch(loginSuccess(response.data));
+
+  
       navigate('/movies');
-    } else {
-      setLocalError(result.error.message || 'Ошибка авторизации');
+    } catch (err) {
+      console.error("Login error:", err); 
+    
+      const errorMessage = err.response?.data?.message || err.message || 'Ошибка авторизации';
+      setLocalError(errorMessage);
+      dispatch(loginFailure(errorMessage));
+
+      console.log("Error message:", errorMessage); 
     }
   };
 
@@ -38,7 +60,7 @@ const Login = () => {
         <Box mb={2}>
           <TextField
             fullWidth
-            label="Логин"
+            label="Имя пользователя"
             variant="outlined"
             name="username"
             value={credentials.username}

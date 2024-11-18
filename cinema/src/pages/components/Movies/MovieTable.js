@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -9,24 +9,29 @@ import {
   Paper,
   Button,
   Typography,
-} from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteMovie, updateMovie } from '../../../redux/movies/moviesSlice'; 
+  CircularProgress
+} from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteMovie, fetchMovies, updateMovie } from '../../../redux/movies/moviesSlice'; 
 import { useTheme } from '@mui/material/styles';
-import { selectAllMovies } from '../../../redux/movies/movieSelector'; // Импортируем селектор
 import MovieEditForm from './MovieEditForm';
 
 const MovieTable = () => {
   const dispatch = useDispatch();
-  const movies = useSelector(selectAllMovies); // Используем селектор
+  const movies = useSelector((state) => state.movies);
   const [editMovieId, setEditMovieId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const theme = useTheme();
 
+  useEffect(() => {
+    dispatch(fetchMovies()).finally(() => setLoading(false)); 
+  }, [dispatch]);
+
   const handleDelete = async (id) => {
-    await dispatch(deleteMovie(id)); // Используем thunk для асинхронного удаления
+    await dispatch(deleteMovie(id));
   };
 
-  const handleEditClick = (movie) => {
+  const handleEdit = (movie) => {
     setEditMovieId(movie.id);
   };
 
@@ -39,68 +44,49 @@ const MovieTable = () => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>
-              <Typography variant="h6">Title</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="h6">Genre</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="h6">Rating</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="h6">Remove</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography variant="h6">Edit</Typography>
-            </TableCell>
+            <TableCell>Title</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Release Year</TableCell>
+            <TableCell>Genre</TableCell>
+            <TableCell>Director</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {movies.map((movie, index) => {
-            const isEvenRow = index % 2 === 0;
-            const rowBackgroundColor = theme.palette.mode === 'dark' 
-              ? (isEvenRow ? '#1f1f1f' : '#121212') 
-              : (isEvenRow ? theme.palette.background.paper : '#808080');
-
-            return (
-              <TableRow
-                key={movie.id}
-                sx={{
-                  backgroundColor: rowBackgroundColor,
-                  color: theme.palette.text.primary,
-                }}
-              >
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                <CircularProgress />
+              </TableCell>
+            </TableRow>
+          ) : (
+            movies.map((movie) => (
+              <TableRow key={movie.id}>
                 <TableCell>{movie.title}</TableCell>
+                <TableCell>{movie.description}</TableCell>
+                <TableCell>{movie.releaseYear}</TableCell>
                 <TableCell>{movie.genre}</TableCell>
-                <TableCell>{movie.rating ?? 'Not Rated'}</TableCell>
+                <TableCell>{movie.director?.name || 'Unknown'}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="error" onClick={() => handleDelete(movie.id)}>
-                    Delete
-                  </Button>
+                  <Button onClick={() => handleEdit(movie)}>Edit</Button>
+                  <Button onClick={() => handleDelete(movie.id)}>Delete</Button>
                 </TableCell>
-                <TableCell>
-                  <Button variant="contained" color="primary" onClick={() => handleEditClick(movie)}>
-                    Edit
-                  </Button>
-                </TableCell>
-                {editMovieId === movie.id && (
-                  <TableRow>
-                    <TableCell colSpan={5}>
-                      <MovieEditForm
-                        movieId={movie.id}
-                        title={movie.title}
-                        genre={movie.genre}
-                        onCancel={handleCancelEdit}
-                      />
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableRow>
-            );
-          })}
+            ))
+          )}
         </TableBody>
       </Table>
+      {editMovieId && (
+        <MovieEditForm
+          movieId={editMovieId}
+          title={movies.find((movie) => movie.id === editMovieId).title}
+          description={movies.find((movie) => movie.id === editMovieId).description}
+          releaseYear={movies.find((movie) => movie.id === editMovieId).releaseYear}
+          genre={movies.find((movie) => movie.id === editMovieId).genre}
+          directorId={movies.find((movie) => movie.id === editMovieId).directorId}
+          onCancel={handleCancelEdit}
+        />
+      )}
     </TableContainer>
   );
 };
