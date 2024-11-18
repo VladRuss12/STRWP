@@ -1,6 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
+// Инициализация начального состояния
 const initialState = [
   { id: uuidv4(), title: "The Shawshank Redemption", genre: "Drama", rating: 9.3, comments: [] },
   { id: uuidv4(), title: "The Godfather", genre: "Crime", rating: 9.2, comments: [] },
@@ -10,53 +11,64 @@ const initialState = [
   { id: uuidv4(), title: "Forrest Gump", genre: "Drama", rating: 8.8, comments: [] },
 ];
 
+// Асинхронные действия
+export const addMovie = createAsyncThunk('movies/addMovie', async (movie) => {
+  // Эмуляция запроса на сервер
+  return { ...movie, id: uuidv4(), rating: null, comments: [] };
+});
 
+export const deleteMovie = createAsyncThunk('movies/deleteMovie', async (id) => {
+  // Эмуляция удаления фильма на сервере
+  return id;
+});
+
+export const updateMovie = createAsyncThunk('movies/updateMovie', async (movie) => {
+  // Эмуляция обновления фильма на сервере
+  return movie;
+});
+
+export const rateMovie = createAsyncThunk('movies/rateMovie', async ({ id, rating }) => {
+  // Эмуляция изменения рейтинга фильма
+  return { id, rating };
+});
+
+export const addComment = createAsyncThunk('movies/addComment', async ({ id, comment }) => {
+  // Эмуляция добавления комментария
+  return { id, comment };
+});
+
+// Создание слайса с обработкой thunk'ов
 const moviesSlice = createSlice({
   name: 'movies',
   initialState,
-  reducers: {
-    addMovie: (state, action) => {
-      state.push({ ...action.payload, id: uuidv4(), rating: null, comments: [] }); 
-    },
-    deleteMovie: (state, action) => {
-      return state.filter(movie => movie.id !== action.payload);
-    },
-    updateMovie: (state, action) => {
-      const index = state.findIndex(movie => movie.id === action.payload.id);
-      if (index !== -1) {
-        state[index] = { ...state[index], ...action.payload };
-      }
-    },
-    rateMovie: (state, action) => {
-      const { id, rating } = action.payload;
-      const index = state.findIndex(movie => movie.id === id);
-      if (index !== -1) {
-        state[index].rating = rating; 
-      }
-    },
-    addComment: (state, action) => {
-      const { id, comment } = action.payload;
-      const index = state.findIndex(movie => movie.id === id);
-      if (index !== -1) {
-        state[index].comments.push(comment);
-      }
-    },
-    removeComment: (state, action) => {
-      const { id, commentIndex } = action.payload;
-      const index = state.findIndex(movie => movie.id === id);
-      if (index !== -1) {
-        state[index].comments.splice(commentIndex, 1); 
-      }
-    },
-    filterMovies: (state, action) => {
-      const filter = action.payload.toLowerCase();
-      return state.filter(movie => 
-        movie.title.toLowerCase().includes(filter) || 
-        movie.genre.toLowerCase().includes(filter)
-      );
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(addMovie.fulfilled, (state, action) => {
+        state.push(action.payload);
+      })
+      .addCase(deleteMovie.fulfilled, (state, action) => {
+        return state.filter(movie => movie.id !== action.payload);
+      })
+      .addCase(updateMovie.fulfilled, (state, action) => {
+        const index = state.findIndex(movie => movie.id === action.payload.id);
+        if (index !== -1) {
+          state[index] = { ...state[index], ...action.payload };
+        }
+      })
+      .addCase(rateMovie.fulfilled, (state, action) => {
+        const index = state.findIndex(movie => movie.id === action.payload.id);
+        if (index !== -1) {
+          state[index].rating = action.payload.rating;
+        }
+      })
+      .addCase(addComment.fulfilled, (state, action) => {
+        const index = state.findIndex(movie => movie.id === action.payload.id);
+        if (index !== -1) {
+          state[index].comments.push(action.payload.comment);
+        }
+      });
   },
 });
 
-export const { addMovie, deleteMovie, updateMovie, rateMovie, addComment, removeComment, filterMovies } = moviesSlice.actions;
 export default moviesSlice.reducer;

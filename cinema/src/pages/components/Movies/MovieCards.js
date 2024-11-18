@@ -1,26 +1,19 @@
 import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  Typography,
-  Grid,
-  Box,
-} from "@mui/material";
+import { Card, CardContent, CardActions, Button, Typography, Grid } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteMovie, updateMovie } from '../../../redux/movies/moviesSlice'; 
+import { selectAllMovies } from '../../../redux/movies/movieSelector'; // Импортируем селектор
 import MovieEditForm from './MovieEditForm';
 
 const MovieCards = () => {
   const dispatch = useDispatch();
-  const movies = useSelector((state) => state.movies); 
+  const movies = useSelector(selectAllMovies); // Используем селектор
   const [editMovieId, setEditMovieId] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedGenre, setEditedGenre] = useState('');
 
-  const handleDelete = (id) => {
-    dispatch(deleteMovie(id)); 
+  const handleDelete = async (id) => {
+    await dispatch(deleteMovie(id)); // Используем thunk для асинхронного удаления
   };
 
   const handleEditClick = (movie) => {
@@ -29,8 +22,8 @@ const MovieCards = () => {
     setEditedGenre(movie.genre);
   };
 
-  const handleUpdateMovie = () => {
-    dispatch(updateMovie({ id: editMovieId, title: editedTitle, genre: editedGenre }));
+  const handleUpdateMovie = async () => {
+    await dispatch(updateMovie({ id: editMovieId, title: editedTitle, genre: editedGenre }));
     setEditMovieId(null); 
     setEditedTitle(''); 
     setEditedGenre('');
