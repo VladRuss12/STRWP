@@ -10,7 +10,7 @@ const Form = () => {
     description: '',
     releaseYear: '',
     genre: '',
-    directorId: '',  // для примера
+    directorId: '',
   });
   const [error, setError] = useState('');
 
@@ -22,17 +22,32 @@ const Form = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
 
+    // Проверка на заполненность всех полей
     if (!movie.title || !movie.description || !movie.releaseYear || !movie.genre || !movie.directorId) {
       setError('Please fill in all fields.');
       return;
     }
 
     try {
-      await dispatch(addMovie(movie));
+      // Создание объекта с вложенным director
+      const movieData = {
+        title: movie.title,
+        description: movie.description,
+        releaseYear: movie.releaseYear,
+        genre: movie.genre,
+        director: {
+          id: movie.directorId // Изменение здесь
+        }
+      };
+
+      // Диспатчим экшен для добавления фильма
+      await dispatch(addMovie(movieData)).unwrap();
+      // Сбрасываем форму после успешного добавления
       setMovie({ title: '', description: '', releaseYear: '', genre: '', directorId: '' });
       setError('');
     } catch (error) {
-      setError('Error adding movie.');
+      // Обработка ошибок
+      setError('Error adding movie. Please try again.');
     }
   };
 

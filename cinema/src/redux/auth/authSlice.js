@@ -64,3 +64,4 @@ const authSlice = createSlice({
 
 export const { loginSuccess, loginFailure, logout } = authSlice.actions;
 export default authSlice.reducer;
+export const selectToken = (state) => state.auth.token;

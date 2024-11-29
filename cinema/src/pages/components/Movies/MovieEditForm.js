@@ -22,15 +22,21 @@ const MovieEditForm = ({ movieId, title, description, releaseYear, genre, direct
 
   const handleSave = async () => {
     try {
-      await dispatch(updateMovie({
-        id: movieId,
+      // Update movie data with the directorId nested inside the director object
+      const movieData = {
+        id: movieId, // Ensure movieId remains unchanged
         title: editedTitle,
         description: editedDescription,
         releaseYear: editedReleaseYear,
         genre: editedGenre,
-        directorId: editedDirectorId,
-      }));
-      onCancel();
+        director: {
+          id: editedDirectorId // Director ID is now inside the director object
+        }
+      };
+  
+      // Dispatch the update action with the updated movie data
+      await dispatch(updateMovie(movieData));
+      onCancel(); // Cancel edit action
     } catch (error) {
       console.error('Error updating movie:', error);
     }
