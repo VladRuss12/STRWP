@@ -1,43 +1,79 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosConfig from '../../api/axiosConfig';
-import { selectToken } from '../auth/authSlice'; // Импортируйте селектор для получения токена
+import { selectToken } from '../auth/authSlice'; // Импорт селектора для токена
 
-const initialState = [];
+const initialState = {
+  movies: [],
+  loading: false,
+  error: null,
+};
 
-// Функция для обновления заголовков axios с токеном
+// Установка токена в заголовки запросов
 const setAuthHeader = (token) => {
   if (token) {
-    axiosConfig.defaults.headers['Authorization'] = `Bearer ${token}`; // Устанавливаем заголовок
+    axiosConfig.defaults.headers['Authorization'] = `Bearer ${token}`;
   } else {
-    delete axiosConfig.defaults.headers['Authorization']; // Удаляем заголовок, если токен отсутствует
+    delete axiosConfig.defaults.headers['Authorization'];
   }
 };
 
-// Обертка для установки заголовка перед выполнением запроса
-const fetchWithAuth = async (url, method, data = null, getState) => {
-  const token = selectToken(getState()); // Получаем токен из состояния
-  setAuthHeader(token); // Устанавливаем заголовок с токеном
-  const response = await axiosConfig({ method, url, data });
-  return response.data;
-};
+// Асинхронные действия
+export const fetchMovies = createAsyncThunk(
+  'movies/fetchMovies',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const token = selectToken(getState()); // Получаем токен из состояния
+      setAuthHeader(token); // Устанавливаем заголовок авторизации
+      const response = await axiosConfig.get('/movies');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error fetching movies.');
+    }
+  }
+);
 
-export const fetchMovies = createAsyncThunk('movies/fetchMovies', async (_, { getState }) => {
-  return await fetchWithAuth('/movies', 'GET', null, getState);
-});
+export const addMovie = createAsyncThunk(
+  'movies/addMovie',
+  async (movie, { getState, rejectWithValue }) => {
+    try {
+      const token = selectToken(getState()); // Получаем токен из состояния
+      setAuthHeader(token); // Устанавливаем заголовок авторизации
+      const response = await axiosConfig.post('/movies', movie);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error adding movie.');
+    }
+  }
+);
 
-export const addMovie = createAsyncThunk('movies/addMovie', async (movie, { getState }) => {
-  return await fetchWithAuth('/movies', 'POST', movie, getState);
-});
+export const updateMovie = createAsyncThunk(
+  'movies/updateMovie',
+  async (movie, { getState, rejectWithValue }) => {
+    try {
+      const token = selectToken(getState()); // Получаем токен из состояния
+      setAuthHeader(token); // Устанавливаем заголовок авторизации
+      // Отправляем фильм без movieId в URL
+      const response = await axiosConfig.put(`/movies`, movie); 
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error updating movie.');
+    }
+  }
+);
 
-export const deleteMovie = createAsyncThunk('movies/deleteMovie', async (id, { getState }) => {
-  await fetchWithAuth(`/movies/${id}`, 'DELETE', null, getState);
-  return id;
-});
-
-export const updateMovie = createAsyncThunk('movies/updateMovie', async (movie, { getState }) => {
-  // Изменяем URL на '/movies', так как id теперь будет в теле запроса
-  return await fetchWithAuth('/movies', 'PUT', movie, getState);
-});
+export const deleteMovie = createAsyncThunk(
+  'movies/deleteMovie',
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const token = selectToken(getState()); // Получаем токен из состояния
+      setAuthHeader(token); // Устанавливаем заголовок авторизации
+      await axiosConfig.delete(`/movies/${id}`);
+      return id; // Возвращаем ID удалённого фильма
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error deleting movie.');
+    }
+  }
+);
 
 const moviesSlice = createSlice({
   name: 'movies',
@@ -46,19 +82,47 @@ const moviesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchMovies.fulfilled, (state, action) => {
-        return action.payload;
+        state.movies = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(fetchMovies.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMovies.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(addMovie.fulfilled, (state, action) => {
-        state.push(action.payload);
+        state.movies.push(action.payload);
+        state.loading = false;
+        state.error = null;
       })
-      .addCase(deleteMovie.fulfilled, (state, action) => {
-        return state.filter(movie => movie.id !== action.payload);
+      .addCase(addMovie.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(updateMovie.fulfilled, (state, action) => {
-        const index = state.findIndex(movie => movie.id === action.payload.id);
+        const index = state.movies.findIndex((m) => m.id === action.payload.id);
         if (index !== -1) {
-          state[index] = { ...state[index], ...action.payload };
+          state.movies[index] = { ...state.movies[index], ...action.payload };
         }
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updateMovie.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteMovie.fulfilled, (state, action) => {
+        state.movies = state.movies.filter((movie) => movie.id !== action.payload);
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(deleteMovie.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

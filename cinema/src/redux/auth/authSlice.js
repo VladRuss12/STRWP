@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosConfig from '../../api/axiosConfig'; 
+import axiosConfig from '../../api/axiosConfig';
 
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await axiosConfig.post('/auth/sign-in', credentials);
+      axiosConfig.defaults.headers['Authorization'] = `Bearer ${response.data.token}`;
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Ошибка авторизации');
@@ -19,25 +20,16 @@ const authSlice = createSlice({
     isAuthenticated: false,
     user: null,
     role: null,
+    token: null,  // Добавлен token
     loading: false,
     error: null,
   },
   reducers: {
-    loginSuccess: (state, action) => {
-      state.isAuthenticated = true;
-      state.user = action.payload.user;
-      state.role = action.payload.role;
-      state.error = null;
-      localStorage.setItem('jwt_token', action.payload.token); 
-    },
-    loginFailure: (state, action) => {
-      state.isAuthenticated = false;
-      state.error = action.payload;
-    },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.role = null;
+      state.token = null;  // Очищаем токен
       state.error = null;
       localStorage.removeItem('jwt_token');
     },
@@ -52,7 +44,9 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.role = action.payload.role;
+        state.token = action.payload.token;  // Сохраняем токен
         state.loading = false;
+        state.error = null;
         localStorage.setItem('jwt_token', action.payload.token);
       })
       .addCase(login.rejected, (state, action) => {
@@ -62,6 +56,8 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, loginFailure, logout } = authSlice.actions;
+export const { logout } = authSlice.actions;
+
+export const selectToken = (state) => state.auth.token;  // Селектор для токена
+
 export default authSlice.reducer;
-export const selectToken = (state) => state.auth.token;

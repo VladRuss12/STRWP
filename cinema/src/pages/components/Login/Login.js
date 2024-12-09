@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Paper, TextField, Button, Typography, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginSuccess, loginFailure } from '../../../redux/auth/authSlice';
-import { selectError, selectLoading } from '../../../redux/auth/authSelector';
-import axiosConfig from '../../../api/axiosConfig'; 
+import { login } from '../../../redux/auth/authSlice';
+import { selectAuthError, selectAuthLoading } from '../../../redux/auth/authSelector'; // Исправленные импорты
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const [localError, setLocalError] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const error = useSelector(selectError);
-  const loading = useSelector(selectLoading);
+  const loading = useSelector(selectAuthLoading);
+  const error = useSelector(selectAuthError);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,33 +19,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Attempting to log in with:", credentials); 
-
-    try {
- 
-      const response = await axiosConfig.post('/auth/sign-in', credentials);
-
-      console.log("Login response:", response); 
-
-   
-      localStorage.setItem('jwt_token', response.data.token);
-
-
-      axiosConfig.defaults.headers['Authorization'] = `Bearer ${response.data.token}`;
-
-     
-      dispatch(loginSuccess(response.data));
-
-  
+    const resultAction = await dispatch(login(credentials));
+    if (login.fulfilled.match(resultAction)) {
       navigate('/movies');
-    } catch (err) {
-      console.error("Login error:", err); 
-    
-      const errorMessage = err.response?.data?.message || err.message || 'Ошибка авторизации';
-      setLocalError(errorMessage);
-      dispatch(loginFailure(errorMessage));
-
-      console.log("Error message:", errorMessage); 
     }
   };
 
@@ -65,6 +39,7 @@ const Login = () => {
             name="username"
             value={credentials.username}
             onChange={handleChange}
+            required
           />
         </Box>
         <Box mb={2}>
@@ -76,11 +51,17 @@ const Login = () => {
             name="password"
             value={credentials.password}
             onChange={handleChange}
+            required
           />
         </Box>
-        {localError && <Typography color="error" align="center">{localError}</Typography>}
         {error && <Typography color="error" align="center">{error}</Typography>}
-        <Button fullWidth type="submit" variant="contained" disabled={loading}>
+        <Button
+          fullWidth
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={loading}
+        >
           {loading ? 'Загрузка...' : 'Войти'}
         </Button>
       </form>

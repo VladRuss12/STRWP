@@ -8,26 +8,25 @@ import {
   TableRow,
   Paper,
   Button,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteMovie, fetchMovies } from '../../../redux/movies/moviesSlice'; 
+import { deleteMovie, fetchMovies } from '../../../redux/movies/moviesSlice';
 import { useTheme } from '@mui/material/styles';
 import MovieEditForm from './MovieEditForm';
 
 const MovieTable = () => {
   const dispatch = useDispatch();
-  const movies = useSelector((state) => state.movies);
-  const loading = useSelector((state) => state.movies.loading); // Используем загрузку из Redux
+  const movies = useSelector((state) => state.movies.movies) || []; // Ensure movies is always an array
+  const loading = useSelector((state) => state.movies.loading); // Loading state
   const [editMovieId, setEditMovieId] = useState(null);
   const theme = useTheme();
 
   useEffect(() => {
-    dispatch(fetchMovies());
+    dispatch(fetchMovies()); // Fetch movies on component mount
   }, [dispatch]);
 
   const handleDelete = async (id) => {
-    // Удаляем фильм и обновляем состояние
     await dispatch(deleteMovie(id));
   };
 
@@ -62,8 +61,8 @@ const MovieTable = () => {
           ) : (
             movies.map((movie, index) => {
               const isEvenRow = index % 2 === 0;
-              const rowBackgroundColor = theme.palette.mode === 'dark' 
-                ? (isEvenRow ? '#1f1f1f' : '#121212') 
+              const rowBackgroundColor = theme.palette.mode === 'dark'
+                ? (isEvenRow ? '#1f1f1f' : '#121212')
                 : (isEvenRow ? theme.palette.background.paper : '#808080');
 
               return (
@@ -92,11 +91,7 @@ const MovieTable = () => {
       {editMovieId && (
         <MovieEditForm
           movieId={editMovieId}
-          title={movies.find((movie) => movie.id === editMovieId)?.title}
-          description={movies.find((movie) => movie.id === editMovieId)?.description}
-          releaseYear={movies.find((movie) => movie.id === editMovieId)?.releaseYear}
-          genre={movies.find((movie) => movie.id === editMovieId)?.genre}
-          directorId={movies.find((movie) => movie.id === editMovieId)?.directorId}
+          movie={movies.find((movie) => movie.id === editMovieId)} // Pass the entire movie object
           onCancel={handleCancelEdit}
         />
       )}
