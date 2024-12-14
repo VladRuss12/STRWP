@@ -27,6 +27,6 @@ export const selectError = createSelector(
   (auth) => auth.error
 );
 
-// Прокси для удобства
+
 export const selectAuthError = selectError;
 export const selectAuthLoading = selectLoading;

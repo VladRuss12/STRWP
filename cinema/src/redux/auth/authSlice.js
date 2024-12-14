@@ -20,7 +20,7 @@ const authSlice = createSlice({
     isAuthenticated: false,
     user: null,
     role: null,
-    token: null,  // Добавлен token
+    token: null, 
     loading: false,
     error: null,
   },
@@ -29,7 +29,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
       state.role = null;
-      state.token = null;  // Очищаем токен
+      state.token = null;  
       state.error = null;
       localStorage.removeItem('jwt_token');
     },
@@ -44,7 +44,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.role = action.payload.role;
-        state.token = action.payload.token;  // Сохраняем токен
+        state.token = action.payload.token;  
         state.loading = false;
         state.error = null;
         localStorage.setItem('jwt_token', action.payload.token);
@@ -58,6 +58,6 @@ const authSlice = createSlice({
 
 export const { logout } = authSlice.actions;
 
-export const selectToken = (state) => state.auth.token;  // Селектор для токена
+export const selectToken = (state) => state.auth.token; 
 
 export default authSlice.reducer;

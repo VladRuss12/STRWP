@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosConfig from '../../api/axiosConfig';
-import { selectToken } from '../auth/authSlice'; // Импорт селектора для токена
+import { selectToken } from '../auth/authSlice'; 
 
 const initialState = {
   movies: [],
@@ -8,7 +8,7 @@ const initialState = {
   error: null,
 };
 
-// Установка токена в заголовки запросов
+
 const setAuthHeader = (token) => {
   if (token) {
     axiosConfig.defaults.headers['Authorization'] = `Bearer ${token}`;
@@ -22,8 +22,8 @@ export const fetchMovies = createAsyncThunk(
   'movies/fetchMovies',
   async (_, { getState, rejectWithValue }) => {
     try {
-      const token = selectToken(getState()); // Получаем токен из состояния
-      setAuthHeader(token); // Устанавливаем заголовок авторизации
+      const token = selectToken(getState()); 
+      setAuthHeader(token);
       const response = await axiosConfig.get('/movies');
       return response.data;
     } catch (error) {
@@ -36,8 +36,8 @@ export const addMovie = createAsyncThunk(
   'movies/addMovie',
   async (movie, { getState, rejectWithValue }) => {
     try {
-      const token = selectToken(getState()); // Получаем токен из состояния
-      setAuthHeader(token); // Устанавливаем заголовок авторизации
+      const token = selectToken(getState());
+      setAuthHeader(token);
       const response = await axiosConfig.post('/movies', movie);
       return response.data;
     } catch (error) {
@@ -50,9 +50,8 @@ export const updateMovie = createAsyncThunk(
   'movies/updateMovie',
   async (movie, { getState, rejectWithValue }) => {
     try {
-      const token = selectToken(getState()); // Получаем токен из состояния
-      setAuthHeader(token); // Устанавливаем заголовок авторизации
-      // Отправляем фильм без movieId в URL
+      const token = selectToken(getState()); 
+      setAuthHeader(token); 
       const response = await axiosConfig.put(`/movies`, movie); 
       return response.data;
     } catch (error) {
@@ -65,10 +64,10 @@ export const deleteMovie = createAsyncThunk(
   'movies/deleteMovie',
   async (id, { getState, rejectWithValue }) => {
     try {
-      const token = selectToken(getState()); // Получаем токен из состояния
-      setAuthHeader(token); // Устанавливаем заголовок авторизации
+      const token = selectToken(getState()); 
+      setAuthHeader(token); 
       await axiosConfig.delete(`/movies/${id}`);
-      return id; // Возвращаем ID удалённого фильма
+      return id;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Error deleting movie.');
     }

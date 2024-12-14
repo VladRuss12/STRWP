@@ -1,42 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  CircularProgress,
-} from '@mui/material';
+import React, { useEffect } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteMovie, fetchMovies } from '../../../redux/movies/moviesSlice';
-import { useTheme } from '@mui/material/styles';
+import { fetchMovies } from '../../../redux/movies/moviesSlice';
+import { useMovieActions } from './useMovieActions'; 
 import MovieEditForm from './MovieEditForm';
+import DeleteConfirmationDialog from './DeleteConfirmationDialog';
+import { useTheme } from '@mui/material/styles';
 
 const MovieTable = () => {
   const dispatch = useDispatch();
-  const movies = useSelector((state) => state.movies.movies) || []; // Ensure movies is always an array
-  const loading = useSelector((state) => state.movies.loading); // Loading state
-  const [editMovieId, setEditMovieId] = useState(null);
+  const movies = useSelector((state) => state.movies.movies) || [];
+  const loading = useSelector((state) => state.movies.loading);
   const theme = useTheme();
 
+ 
+  const {
+    editMovieId,
+    openDeleteDialog,
+    selectedMovie,
+    handleDelete,
+    handleEdit,
+    handleCancelEdit,
+    handleOpenDeleteDialog,
+    handleCloseDeleteDialog
+  } = useMovieActions();
+
   useEffect(() => {
-    dispatch(fetchMovies()); // Fetch movies on component mount
+    dispatch(fetchMovies());
   }, [dispatch]);
-
-  const handleDelete = async (id) => {
-    await dispatch(deleteMovie(id));
-  };
-
-  const handleEdit = (movie) => {
-    setEditMovieId(movie.id);
-  };
-
-  const handleCancelEdit = () => {
-    setEditMovieId(null);
-  };
 
   return (
     <TableContainer component={Paper}>
@@ -80,7 +71,7 @@ const MovieTable = () => {
                   <TableCell>{movie.director?.name || 'Unknown'}</TableCell>
                   <TableCell>
                     <Button onClick={() => handleEdit(movie)}>Edit</Button>
-                    <Button onClick={() => handleDelete(movie.id)}>Delete</Button>
+                    <Button onClick={() => handleOpenDeleteDialog(movie)}>Delete</Button>
                   </TableCell>
                 </TableRow>
               );
@@ -88,13 +79,27 @@ const MovieTable = () => {
           )}
         </TableBody>
       </Table>
+
+  
       {editMovieId && (
         <MovieEditForm
           movieId={editMovieId}
-          movie={movies.find((movie) => movie.id === editMovieId)} // Pass the entire movie object
-          onCancel={handleCancelEdit}
+          title={movies.find((movie) => movie.id === editMovieId)?.title}
+          description={movies.find((movie) => movie.id === editMovieId)?.description}
+          releaseYear={movies.find((movie) => movie.id === editMovieId)?.releaseYear}
+          genre={movies.find((movie) => movie.id === editMovieId)?.genre}
+          directorId={movies.find((movie) => movie.id === editMovieId)?.director?.id}
+          open={Boolean(editMovieId)} 
+          onClose={handleCancelEdit} 
         />
       )}
+
+      <DeleteConfirmationDialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        deleteHandler={handleDelete}
+        item={selectedMovie}
+      />
     </TableContainer>
   );
 };

@@ -1,45 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Card, CardContent, CardActions, Button, Typography, Grid, TextField,
-  Dialog, DialogActions, DialogContent, DialogTitle,
-} from '@mui/material';
+
+import React, { useEffect } from 'react';
+import { Grid, Card, CardContent, CardActions, Button, Typography, Dialog } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteMovie, updateMovie, fetchMovies } from '../../../redux/movies/moviesSlice';
+import { fetchMovies } from '../../../redux/movies/moviesSlice';
+import { useMovieActions } from './useMovieActions'; 
+import MovieEditForm from './MovieEditForm'; 
+import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 
 const MovieCards = () => {
   const dispatch = useDispatch();
-  const movies = useSelector((state) => state.movies.movies) || []; // Защита от undefined
-  const loading = useSelector((state) => state.movies.loading); // Состояние загрузки
-  const [editMovieId, setEditMovieId] = useState(null);
-  const [editedMovie, setEditedMovie] = useState({});
-  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const movies = useSelector((state) => state.movies.movies) || [];
+  const loading = useSelector((state) => state.movies.loading);
+
+  
+  const {
+    editMovieId,
+    openDeleteDialog,
+    selectedMovie,
+    handleDelete,
+    handleEdit,
+    handleCancelEdit,
+    handleOpenDeleteDialog,
+    handleCloseDeleteDialog
+  } = useMovieActions();
 
   useEffect(() => {
     dispatch(fetchMovies());
   }, [dispatch]);
-
-  const handleDelete = async (id) => {
-    await dispatch(deleteMovie(id));
-  };
-
-  const handleEditClick = (movie) => {
-    setEditMovieId(movie.id);
-    setEditedMovie(movie);
-    setOpenEditDialog(true);
-  };
-
-  const handleUpdateMovie = async () => {
-    await dispatch(updateMovie(editedMovie));
-    setOpenEditDialog(false);
-    setEditMovieId(null);
-    setEditedMovie({});
-  };
-
-  const handleCloseEditDialog = () => {
-    setOpenEditDialog(false);
-    setEditMovieId(null);
-    setEditedMovie({});
-  };
 
   return (
     <div>
@@ -47,45 +34,44 @@ const MovieCards = () => {
         {loading ? (
           <Typography>Loading...</Typography>
         ) : (
-          movies.length === 0 ? (
-            <Typography>No movies available</Typography>
-          ) : (
-            movies.map((movie) => (
-              <Grid item xs={12} sm={6} md={4} key={movie.id}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h5">{movie.title}</Typography>
-                    <Typography variant="body2">Genre: {movie.genre}</Typography>
-                    <Typography variant="body2">Release Year: {movie.releaseYear}</Typography>
-                    <Typography variant="body2">Description: {movie.description}</Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button onClick={() => handleEditClick(movie)}>Edit</Button>
-                    <Button onClick={() => handleDelete(movie.id)}>Delete</Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))
-          )
+          movies.map((movie) => (
+            <Grid item xs={12} sm={6} md={4} key={movie.id}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h5">{movie.title}</Typography>
+                  <Typography variant="body2">Genre: {movie.genre}</Typography>
+                  <Typography variant="body2">Release Year: {movie.releaseYear}</Typography>
+                  <Typography variant="body2">Description: {movie.description}</Typography>
+                </CardContent>
+                <CardActions>
+                  <Button onClick={() => handleEdit(movie)}>Edit</Button>
+                  <Button onClick={() => handleOpenDeleteDialog(movie)}>Delete</Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))
         )}
       </Grid>
 
-      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle>Edit Movie</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Title"
-            value={editedMovie.title || ''}
-            onChange={(e) => setEditedMovie({ ...editedMovie, title: e.target.value })}
-            fullWidth
-          />
-          {/* Добавьте остальные поля */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog}>Cancel</Button>
-          <Button onClick={handleUpdateMovie}>Save</Button>
-        </DialogActions>
-      </Dialog>
+       {editMovieId && (
+        <MovieEditForm
+          movieId={editMovieId}
+          title={movies.find((movie) => movie.id === editMovieId)?.title}
+          description={movies.find((movie) => movie.id === editMovieId)?.description}
+          releaseYear={movies.find((movie) => movie.id === editMovieId)?.releaseYear}
+          genre={movies.find((movie) => movie.id === editMovieId)?.genre}
+          directorId={movies.find((movie) => movie.id === editMovieId)?.director?.id}
+          open={Boolean(editMovieId)} 
+          onClose={handleCancelEdit} 
+        />
+      )}
+
+      <DeleteConfirmationDialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        deleteHandler={handleDelete}
+        item={selectedMovie}
+      />
     </div>
   );
 };
